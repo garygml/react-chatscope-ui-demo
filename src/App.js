@@ -13,7 +13,10 @@ import { useState } from 'react';
 function App() {
 
   const [url, setUrl] = useState("http://127.0.0.1:8000/answer")
-  const [header, setHeader] = useState("")
+  const [header, setHeader] = useState(JSON.stringify({
+    'Content-type': 'application/json; charset=UTF-8',
+  }))
+  const [chatDisabled, setChatDisabled] = useState(false)
 
 
   const [messages, setMessages] = useState([]);
@@ -22,31 +25,45 @@ function App() {
     <Message model = {m}/>
   );
 
+  const onHeaderChange = (e) => {
+    let text = e.target.value
+    setHeader(text)
+
+    try {
+      let h = JSON.parse(text)
+      setChatDisabled(false)
+    } catch (error) {
+      setChatDisabled(true)
+    }
+    
+  }
+
   const onMessageSend = (text) => {
     console.log(text)
     let oldMessages = messages
-    callApiForBotResponse(text, oldMessages)
-  }
-
-  const callApiForBotResponse = async (input, oldChatHistory) => {
-
-    await setMessages(
+    setMessages(
       [
         ...messages,
         {
-          message: input,
+          message: text,
           sentTime: "just now",
           sender: "human",
           position: 'single'
         }
       ]
     )
+    setChatDisabled(true)
+    callApiForBotResponse(text, oldMessages)
+  }
+
+  const callApiForBotResponse = async (input, oldChatHistory) => {
 
     let oldChatHistoryAsTextList = oldChatHistory.map((m) =>
       m.message
     );
     console.log(oldChatHistoryAsTextList)
 
+    let h = JSON.parse(header);
 
     await fetch(url, {
     method: 'POST',
@@ -55,9 +72,7 @@ function App() {
        "chat_history": oldChatHistoryAsTextList,
        //userId: Math.random().toString(36).slice(2),
     }),
-    headers: {
-       'Content-type': 'application/json; charset=UTF-8',
-    },
+    headers: h,
     })
     .then((response) => response.json())
     .then((data) => {
@@ -80,6 +95,7 @@ function App() {
           }
         ]
       )
+      setChatDisabled(false)
     })
     .catch((err) => {
        console.log(err.message);
@@ -101,6 +117,7 @@ function App() {
           }
         ]
       )
+      setChatDisabled(false)
     });
     };
   
@@ -113,11 +130,11 @@ function App() {
           <ChatContainer style={{  "background-color": "plum"}}>
             <MessageList>
             <input style={{width: "100vw"}} id="url" value={url} onChange={e => setUrl(e.target.value)}/>
-            <input style={{width: "100vw"}} id="header" value={header} onChange={e => setHeader(e.target.value)}/>
+            <textarea style={{width: "100vw"}} id="header" value={header} onChange={onHeaderChange}/>
 
               {messageItems}
             </MessageList>
-            <MessageInput attachButton={false} placeholder="Type message here" onSend={onMessageSend} />
+            <MessageInput disabled={chatDisabled} attachButton={false} placeholder="Type message here" onSend={onMessageSend} />
           </ChatContainer>
         </MainContainer>
       </div>
