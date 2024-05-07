@@ -67,10 +67,10 @@ function App() {
 
     await fetch(
     process.env.REACT_APP_ANSWER_URL, 
-    process.env.NODE_ENV !== 'production' ? 
-    {
-      method: 'GET'
-    }:
+    // process.env.NODE_ENV !== 'production' ? 
+    // {
+    //   method: 'GET'
+    // }:
     {
     method: 'POST',
     body: JSON.stringify({
