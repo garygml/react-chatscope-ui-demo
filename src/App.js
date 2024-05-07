@@ -12,10 +12,10 @@ import { useState } from 'react';
 
 function App() {
 
-  const [url, setUrl] = useState("http://127.0.0.1:8000/answer")
-  const [header, setHeader] = useState(JSON.stringify({
-    'Content-type': 'application/json; charset=UTF-8',
-  }))
+  // const [url, setUrl] = useState("http://127.0.0.1:8000/answer")
+  // const [header, setHeader] = useState(JSON.stringify({
+  //   'Content-type': 'application/json; charset=UTF-8',
+  // }))
   const [chatDisabled, setChatDisabled] = useState(false)
 
 
@@ -25,18 +25,18 @@ function App() {
     <Message model = {m}/>
   );
 
-  const onHeaderChange = (e) => {
-    let text = e.target.value
-    setHeader(text)
+  // const onHeaderChange = (e) => {
+  //   let text = e.target.value
+  //   setHeader(text)
 
-    try {
-      let h = JSON.parse(text)
-      setChatDisabled(false)
-    } catch (error) {
-      setChatDisabled(true)
-    }
+  //   try {
+  //     let h = JSON.parse(text)
+  //     setChatDisabled(false)
+  //   } catch (error) {
+  //     setChatDisabled(true)
+  //   }
     
-  }
+  // }
 
   const onMessageSend = (text) => {
     console.log(text)
@@ -63,16 +63,24 @@ function App() {
     );
     console.log(oldChatHistoryAsTextList)
 
-    let h = JSON.parse(header);
+    // let h = JSON.parse(header);
 
-    await fetch(url, {
+    await fetch(
+    process.env.REACT_APP_ANSWER_URL, 
+    process.env.NODE_ENV !== 'production' ? 
+    {
+      method: 'GET'
+    }:
+    {
     method: 'POST',
     body: JSON.stringify({
        "input": input,
        "chat_history": oldChatHistoryAsTextList,
        //userId: Math.random().toString(36).slice(2),
     }),
-    headers: h,
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+    },
     })
     .then((response) => response.json())
     .then((data) => {
@@ -129,8 +137,8 @@ function App() {
         <MainContainer style={{fontSize:"1.2em"}}>
           <ChatContainer style={{  "background-color": "plum"}}>
             <MessageList>
-            <input style={{width: "100vw"}} id="url" value={url} onChange={e => setUrl(e.target.value)}/>
-            <textarea style={{width: "100vw"}} id="header" value={header} onChange={onHeaderChange}/>
+            {/* <input style={{width: "100vw"}} id="url" value={url} onChange={e => setUrl(e.target.value)}/>
+            <textarea style={{width: "100vw"}} id="header" value={header} onChange={onHeaderChange}/> */}
 
               {messageItems}
             </MessageList>

@@ -1,0 +1,12 @@
+{
+    "input": "but hey you are nice",
+    "chat_history": [
+        "I went to this burger place, can you check how much I have spent there?",
+        "You have spent $18.34 at Nobel Burger on 2019-04-14.",
+        "and was i using a card for that",
+        "Yes, you used a MasterCard for that transaction.",
+        "hwo much did i tip there",
+        "$2.52"
+    ],
+    "output":"Thank you. I appreciate your compliments. "
+}
